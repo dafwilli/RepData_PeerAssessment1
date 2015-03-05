@@ -40,13 +40,20 @@ mean(total$total_steps,na.rm=TRUE)
 median(total$total_steps,na.rm=TRUE)
 ```
 
-
-
-
-
 ## What is the average daily activity pattern?
+### group the data by inteval, find the mean of each interval and plot
+```{r}
+by_interval <- group_by(data,interval)
+avs <- summarise(by_interval, average_steps = mean(steps,na.rm=TRUE))
+plot(avs,pch=20,main="Average Steps for each Interval",ylab="Average Steps",col=accent[6])
+lines(avs)
+```
 
-
+### find the interval that has the maximum number of steps
+```{r}
+index <- which.max(avs$average_steps)
+avs$interval[index]
+```
 
 ## Imputing missing values
 
