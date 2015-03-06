@@ -27,24 +27,24 @@ data <- mutate(data, date = ymd(date))
 ```
 
 ## What is mean total number of steps taken per day?
-### first get the total number of steps per day
+#### first get the total number of steps per day
 ```{r}
 by_date <- group_by(data,date)
 total <- summarise(by_date,total_steps = sum(steps))
 ```
-### plot a histogram
+#### plot a histogram
 ```{r}
 hist(total$total_steps, main="Histogram Steps/Day",xlab="Steps",breaks=10,col=accent[5])
 ```
 
-### calculate the mean and median
+#### calculate the mean and median
 ```{r}
 mean(total$total_steps,na.rm=TRUE)
 median(total$total_steps,na.rm=TRUE)
 ```
 
 ## What is the average daily activity pattern?
-### group the data by inteval, find the mean of each interval and plot
+#### group the data by inteval, find the mean of each interval and plot
 ```{r}
 by_interval <- group_by(data,interval)
 avs <- summarise(by_interval, average_steps = mean(steps,na.rm=TRUE))
@@ -52,23 +52,23 @@ plot(avs,pch=".",main="Average Steps for each Interval",ylab="Average Steps",col
 lines(avs)
 ```
 
-### find the interval that has the maximum number of steps
+#### find the interval that has the maximum number of steps
 ```{r}
 index <- which.max(avs$average_steps)
 avs$interval[index]
 ```
 
 ## Imputing missing values
-### use Amelia package to visualize missing vales
+#### use Amelia package to visualize missing vales
 ```{r}
 missmap(data,ylabel="")
 ```
 
-### there are ony missins in steps - so count the number missing
+#### there are only missing values in steps - so count the number missing
 ```{r}
 sum(is.na(data$steps))
 ```
-### impute the missing values in steps by using the mean for each 5 minute interval and put them in vector new
+#### impute the missing values in steps using the mean for each 5 minute interval and put them in vector new
 ```{r}
 new <- data$steps
 
@@ -79,13 +79,15 @@ for (n in 1:17568){
   }
 }
 ```
-### create new dataframe with the imputed values
+
+#### create new dataframe with the imputed values
 ```{r}
 new_data <- data
 new_data <- select(new_data,date,interval)
 new_data <- mutate(new_data,steps = new)
 ```
-### plot a histogram of the new_data and get the mean and median
+
+#### plot a histogram of the new_data and get the mean and median
 ```{r}
 new_by_date <- group_by(new_data,date)
 new_total <- summarise(new_by_date,total_steps = sum(steps))
@@ -96,14 +98,14 @@ median(new_total$total_steps)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
-### make a new vector with weekday or weekend and add it to new_data dataframe
+#### make a new vector with weekday or weekend and add it to new_data dataframe
 ```{r}
 w_end <- c(1,7)
 wk_day <- ifelse(wday(new_data$date) %in% w_end,"weekend","weekday")
 new_data <- mutate(new_data, day = as.factor(wk_day))
 ```
 
-### now group by interval and day and get the mean over the 5 intervals minute
+#### now group by interval and day and get the mean over the 5 intervals minute
 ```{r}
 by_int_day <- group_by(new_data, interval, day)
 ave_interval_by_int_day <- summarise(by_int_day,ave_steps = mean(steps))
@@ -111,7 +113,7 @@ w_days <- filter(ave_interval_by_int_day, day == "weekday")
 w_ends <- filter(ave_interval_by_int_day, day == "weekend")
 ```
 
-### now plot them
+#### now plot them
 ```{r}
 p1 <- qplot(interval,ave_steps,data=w_days,geom="line")
 p1 <- p1 + labs(title="Weekdays",x="",y="Average Steps")
