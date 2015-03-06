@@ -10,6 +10,9 @@ output: html_document
 library(dplyr)
 library(lubridate)
 library(RColorBrewer)
+library(Amelia)
+library(gridExtra)
+library(ggplot2)
 ```
 
 ## prepare a color palette
@@ -45,7 +48,7 @@ median(total$total_steps,na.rm=TRUE)
 ```{r}
 by_interval <- group_by(data,interval)
 avs <- summarise(by_interval, average_steps = mean(steps,na.rm=TRUE))
-plot(avs,pch=20,main="Average Steps for each Interval",ylab="Average Steps",col=accent[6])
+plot(avs,pch=".",main="Average Steps for each Interval",ylab="Average Steps",col=accent[6])
 lines(avs)
 ```
 
@@ -56,9 +59,65 @@ avs$interval[index]
 ```
 
 ## Imputing missing values
+### use Amelia package to visualize missing vales
+```{r}
+missmap(data,ylabel="")
+```
 
+### there are ony missins in steps - so count the number missing
+```{r}
+sum(is.na(data$steps))
+```
+### impute the missing values in steps by using the mean for each 5 minute interval and put them in vector new
+```{r}
+new <- data$steps
 
+for (n in 1:17568){
+  if (is.na(data$steps[n])) {
+    index <- which(avs$interval == data$interval[n])
+    new[n] <- round(avs$average_steps[index])
+  }
+}
+```
+### create new dataframe with the imputed values
+```{r}
+new_data <- data
+new_data <- select(new_data,date,interval)
+new_data <- mutate(new_data,steps = new)
+```
+### plot a histogram of the new_data and get the mean and median
+```{r}
+new_by_date <- group_by(new_data,date)
+new_total <- summarise(new_by_date,total_steps = sum(steps))
+hist(new_total$total_steps, main="Histogram Steps/Day",xlab="Steps",breaks=10,col=accent[7])
+
+mean(new_total$total_steps)
+median(new_total$total_steps)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+### make a new vector with weekday or weekend and add it to new_data dataframe
+```{r}
+w_end <- c(1,7)
+wk_day <- ifelse(wday(new_data$date) %in% w_end,"weekend","weekday")
+new_data <- mutate(new_data, day = as.factor(wk_day))
+```
 
+### now group by interval and day and get the mean over the 5 intervals minute
+```{r}
+by_int_day <- group_by(new_data, interval, day)
+ave_interval_by_int_day <- summarise(by_int_day,ave_steps = mean(steps))
+w_days <- filter(ave_interval_by_int_day, day == "weekday")
+w_ends <- filter(ave_interval_by_int_day, day == "weekend")
+```
 
+### now plot them
+```{r}
+p1 <- qplot(interval,ave_steps,data=w_days,geom="line")
+p1 <- p1 + labs(title="Weekdays",x="",y="Average Steps")
+
+p2 <- qplot(interval,ave_steps,data=w_ends,geom="line")
+p2 <- p2 + labs(title="Weekends",x="Interval",y="Average Steps")
+
+grid.arrange(p1,p2,ncol=1)
+```
