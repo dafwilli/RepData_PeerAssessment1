@@ -13,6 +13,7 @@ library(RColorBrewer)
 library(Amelia)
 library(gridExtra)
 library(ggplot2)
+library(stringr)
 ```
 
 ## prepare a color palette
@@ -24,6 +25,10 @@ accent <- brewer.pal(8,"Accent")
 ```{r}
 data <- read.csv("activity.csv")
 data <- mutate(data, date = ymd(date))
+new_interval <- NULL
+for(i in 1:288) new_interval=c(new_interval,as.integer((i-1)*5))
+new_interval <- rep(new_interval, 61)
+data <- mutate(data,interval=new_interval)
 ```
 
 ## What is mean total number of steps taken per day?
