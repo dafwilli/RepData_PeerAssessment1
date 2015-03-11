@@ -7,46 +7,9 @@ output: html_document
 
 ```r
 library(dplyr)
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-## 
-## The following objects are masked from 'package:Hmisc':
-## 
-##     src, summarize
-## 
-## The following object is masked from 'package:MASS':
-## 
-##     select
-## 
-## The following object is masked from 'package:stats':
-## 
-##     filter
-## 
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
 library(lubridate)
 library(RColorBrewer)
 library(Amelia)
-```
-
-```
-## Loading required package: Rcpp
-## ## 
-## ## Amelia II: Multiple Imputation
-## ## (Version 1.7.3, built: 2014-11-14)
-## ## Copyright (C) 2005-2015 James Honaker, Gary King and Matthew Blackwell
-## ## Refer to http://gking.harvard.edu/amelia/ for more information
-## ##
-```
-
-```r
 library(gridExtra)
 library(ggplot2)
 library(stringr)
