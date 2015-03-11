@@ -1,5 +1,6 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+Author: David Williams
 output: html_document
 ---
 ```{r, echo=TRUE}
